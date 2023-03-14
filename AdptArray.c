@@ -30,27 +30,20 @@ Result SetAdptArrayAt (PAdptArray adptArray, int i, PElement element){
     if (i < 0){
         return FAIL;
     }
-
     if (i >= adptArray->capacity){
-        int new_capacity = i + 1;
-        PElement* new_array = (PElement*)realloc(adptArray->array, new_capacity * sizeof(PElement));
-        if (new_array == NULL){
+        PElement* temp = (PElement*)realloc(adptArray->array, sizeof(PElement)*(i+1));
+        if (temp == NULL){
             return FAIL;
+            free(adptArray);
         }
-        adptArray->array = new_array;
-        adptArray->capacity = new_capacity;
+        adptArray->array = temp;
+        adptArray->capacity = i+1;
+        
     }
-
-    if (i >= adptArray->size){
-        adptArray->size = i + 1;
+    if (i > adptArray->size){
+            adptArray->size = i+1;
     }
-
-    if (adptArray->array[i] != NULL){
-        adptArray->delete(adptArray->array[i]);
-    }
-
     adptArray->array[i] = adptArray->copy(element);
-
     return SUCCESS;
 }
 
@@ -59,7 +52,9 @@ PElement GetAdptArrayAt(PAdptArray adptArray, int i ){
 
         return NULL;
     }
-
+    if(adptArray->array[i] == NULL){
+        return NULL;
+    }
     return adptArray->copy(adptArray->array[i]);
 }
 
@@ -82,6 +77,9 @@ void DeleteAdptArray(PAdptArray adptArray){
 
 void PrintDB(PAdptArray adptArray){
     for (int i = 0; i < adptArray->size; i++){
-        adptArray->print(adptArray->array[i]);
+        if(adptArray->array[i] != NULL){
+            adptArray->print(adptArray->array[i]);
+        }
+        
     }
 }
